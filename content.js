@@ -195,13 +195,17 @@ async function fetchProfile(username) {
 
 function profileFromApiUser(d) {
   return {
-    userId:     d.id,
-    username:   d.username,
-    isPrivate:  d.is_private ?? false,
-    profilePic: d.profile_pic_url_hd ?? d.profile_pic_url ?? null,
-    followers:  d.edge_followed_by?.count             ?? d.follower_count  ?? null,
-    following:  d.edge_follow?.count                  ?? d.following_count ?? null,
-    posts:      d.edge_owner_to_timeline_media?.count ?? d.media_count     ?? null,
+    userId:      d.id,
+    username:    d.username,
+    fullName:    d.full_name   ?? null,
+    isPrivate:   d.is_private  ?? false,
+    isVerified:  d.is_verified ?? false,
+    profilePic:  d.profile_pic_url_hd ?? d.profile_pic_url ?? null,
+    bio:         d.biography  ?? null,
+    externalUrl: d.external_url ?? d.bio_links?.[0]?.url ?? null,
+    followers:   d.edge_followed_by?.count             ?? d.follower_count  ?? null,
+    following:   d.edge_follow?.count                  ?? d.following_count ?? null,
+    posts:       d.edge_owner_to_timeline_media?.count ?? d.media_count     ?? null,
   };
 }
 
@@ -228,13 +232,17 @@ function parseProfileFromHtml(html, usernameLower) {
       );
       if (user) {
         return {
-          userId:     user.id    ?? user.pk,
-          username:   user.username,
-          isPrivate:  user.is_private ?? false,
-          profilePic: user.profile_pic_url_hd ?? user.profile_pic_url ?? null,
-          followers:  user.edge_followed_by?.count             ?? user.follower_count  ?? null,
-          following:  user.edge_follow?.count                  ?? user.following_count ?? null,
-          posts:      user.edge_owner_to_timeline_media?.count ?? user.media_count     ?? null,
+          userId:      user.id    ?? user.pk,
+          username:    user.username,
+          fullName:    user.full_name  ?? null,
+          isPrivate:   user.is_private  ?? false,
+          isVerified:  user.is_verified ?? false,
+          profilePic:  user.profile_pic_url_hd ?? user.profile_pic_url ?? null,
+          bio:         user.biography ?? null,
+          externalUrl: user.external_url ?? user.bio_links?.[0]?.url ?? null,
+          followers:   user.edge_followed_by?.count             ?? user.follower_count  ?? null,
+          following:   user.edge_follow?.count                  ?? user.following_count ?? null,
+          posts:       user.edge_owner_to_timeline_media?.count ?? user.media_count     ?? null,
         };
       }
     } catch {}
@@ -253,6 +261,7 @@ function parseProfileFromHtml(html, usernameLower) {
   if (userId || fromMeta) {
     const parse = (m) => m ? parseInt(m[1].replace(/,/g, ''), 10) : null;
     const isPrivate  = /is_private["'\s]*:["'\s]*true/i.test(html);
+    const isVerified = /is_verified["'\s]*:["'\s]*true/i.test(html);
     const picMatch   = html.match(/"profile_pic_url_hd"\s*:\s*"((?:[^"\\]|\\.)*)"/);
     const picMatch2  = picMatch ?? html.match(/"profile_pic_url"\s*:\s*"((?:[^"\\]|\\.)*)"/);
     let profilePic   = null;
@@ -260,11 +269,30 @@ function parseProfileFromHtml(html, usernameLower) {
       try { profilePic = JSON.parse('"' + picMatch2[1] + '"'); }
       catch { profilePic = picMatch2[1].replace(/\\u0026/g, '&').replace(/\\\//g, '/'); }
     }
+    const fullNameMatch = html.match(/"full_name"\s*:\s*"((?:[^"\\]|\\.)*)"/);
+    let fullName = null;
+    if (fullNameMatch) {
+      try { fullName = JSON.parse('"' + fullNameMatch[1] + '"'); } catch { fullName = fullNameMatch[1]; }
+    }
+    const bioMatch = html.match(/"biography"\s*:\s*"((?:[^"\\]|\\.)*)"/);
+    let bio = null;
+    if (bioMatch) {
+      try { bio = JSON.parse('"' + bioMatch[1] + '"'); } catch { bio = bioMatch[1]; }
+    }
+    const extUrlMatch = html.match(/"external_url"\s*:\s*"((?:[^"\\]|\\.)*)"/);
+    let externalUrl = null;
+    if (extUrlMatch) {
+      try { externalUrl = JSON.parse('"' + extUrlMatch[1] + '"'); } catch { externalUrl = extUrlMatch[1]; }
+    }
     return {
       userId:    userId ?? null,
       username:  usernameLower,
+      fullName,
       isPrivate,
+      isVerified,
       profilePic,
+      bio,
+      externalUrl,
       followers: parse(fwrMatch)  ?? extractCount(html, 'edge_followed_by')             ?? extractCount(html, 'follower_count'),
       following: parse(fwgMatch)  ?? extractCount(html, 'edge_follow')                  ?? extractCount(html, 'following_count'),
       posts:     parse(postMatch) ?? extractCount(html, 'edge_owner_to_timeline_media')  ?? extractCount(html, 'media_count'),
@@ -307,6 +335,8 @@ _chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     resolveUserId(msg.username)
       .then(id => {
         if (!id) throw new Error('Could not resolve user ID');
+        const selfId = getCookie('ds_user_id');
+        if (selfId && id === selfId) throw new Error('You cannot block yourself');
         return blockById(id);
       })
       .then(() => sendResponse({ ok: true }))

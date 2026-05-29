@@ -8,10 +8,15 @@ const infoBox    = document.getElementById('infoBox');
 const avatar     = document.getElementById('avatar');
 const noPhoto    = document.getElementById('noPhoto');
 const iUsername  = document.getElementById('iUsername');
+const iFullName  = document.getElementById('iFullName');
 const iId        = document.getElementById('iId');
 const iFollowers = document.getElementById('iFollowers');
 const iFollowing = document.getElementById('iFollowing');
 const iPosts     = document.getElementById('iPosts');
+const iBio       = document.getElementById('iBio');
+const rowBio     = document.getElementById('rowBio');
+const iUrl       = document.getElementById('iUrl');
+const rowUrl     = document.getElementById('rowUrl');
 const status     = document.getElementById('status');
 
 function setStatus(msg, cls) {
@@ -81,11 +86,29 @@ infoBtn.addEventListener('click', async () => {
     noPhoto.style.display = 'block';
   }
 
-  iUsername.textContent  = '@' + p.username + (priv ? ' 🔒' : '');
+  const usernameLabel = '@' + p.username + (priv ? ' 🔒' : '') + (p.isVerified ? ' ✓' : '');
+  iUsername.textContent = usernameLabel;
+  iUsername.title = usernameLabel;
+  iFullName.textContent  = p.fullName || '—';
   iId.textContent        = p.userId ?? '—';
   iFollowers.textContent = fmt(p.followers, priv);
   iFollowing.textContent = fmt(p.following, priv);
   iPosts.textContent     = fmt(p.posts,     priv);
+
+  if (p.bio) {
+    iBio.textContent = p.bio;
+    rowBio.style.display = '';
+  } else {
+    rowBio.style.display = 'none';
+  }
+
+  if (p.externalUrl) {
+    iUrl.textContent = p.externalUrl;
+    iUrl.href = p.externalUrl;
+    rowUrl.style.display = '';
+  } else {
+    rowUrl.style.display = 'none';
+  }
   infoBox.classList.add('visible');
   setStatus('');
 });
