@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Instagram Blocker",
+  "name": "Instagram Viewer & Blocker",
   "version": "1.0.0",
-  "description": "Block Instagram accounts — even ones that blocked you first.",
+  "description": "View profiles and block any Instagram account — even ones that blocked you first.",
   "permissions": ["cookies", "activeTab", "scripting", "tabs"],
   "host_permissions": [
     "https://www.instagram.com/*",
@@ -33,7 +33,7 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Instagram Blocker",
+    "default_title": "Instagram Viewer & Blocker",
     "default_icon": {
       "16":  "icons/icon16.png",
       "48":  "icons/icon48.png",
