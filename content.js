@@ -52,6 +52,48 @@ async function resolveUserId(username) {
     if (id) return id;
   } catch {}
 
+  // Method 5: anonymous page fetch — credentials: 'omit' strips session cookies.
+  // Instagram sees an unauthenticated visitor → block relationship doesn't apply
+  // → full profile HTML returned → parse user ID from embedded JSON.
+  try {
+    const r = await fetch(`/${encodeURIComponent(username)}/`, { credentials: 'omit' });
+    if (r.ok) {
+      const html = await r.text();
+      const id = parseUserIdFromHtml(html, username);
+      if (id) return id;
+    }
+  } catch {}
+
+  return null;
+}
+
+function parseUserIdFromHtml(html, username) {
+  // Instagram embeds profile data in <script type="application/json"> blocks.
+  // User ID appears as "pk":"DIGITS" (primary key) inside those JSON blobs.
+  // We also try username-anchored patterns to avoid false positives.
+
+  const anchored = [
+    new RegExp(`"username"\\s*:\\s*"${username}"[^}]{0,300}"pk"\\s*:\\s*"(\\d{7,})"`),
+    new RegExp(`"pk"\\s*:\\s*"(\\d{7,})"[^}]{0,300}"username"\\s*:\\s*"${username}"`),
+    new RegExp(`"username"\\s*:\\s*"${username}"[^}]{0,300}"id"\\s*:\\s*"(\\d{7,})"`),
+    new RegExp(`"id"\\s*:\\s*"(\\d{7,})"[^}]{0,300}"username"\\s*:\\s*"${username}"`),
+  ];
+  for (const p of anchored) {
+    const m = html.match(p);
+    if (m) return m[1];
+  }
+
+  // Fallback: first "pk" value inside a <script type="application/json"> block
+  const jsonBlocks = html.match(/<script type="application\/json"[^>]*>([\s\S]*?)<\/script>/g) ?? [];
+  for (const block of jsonBlocks) {
+    const m = block.match(/"pk"\s*:\s*"(\d{7,})"/);
+    if (m) return m[1];
+  }
+
+  // Last resort: profilePage_ pattern (older Instagram builds)
+  const legacy = html.match(/profilePage_(\d{7,})/);
+  if (legacy) return legacy[1];
+
   return null;
 }
 
