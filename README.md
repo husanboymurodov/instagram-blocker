@@ -67,7 +67,7 @@ Calls Instagram's internal GraphQL mutation (`usePolarisBlockManyMutation`) — 
 
 ## Privacy
 
-This extension collects no data. See [privacy-policy.html](privacy-policy.html) — host it on GitHub Pages to use as the store listing URL.
+This extension collects no data. [Privacy Policy](https://husanboymurodov.github.io/instagram-blocker/privacy-policy.html)
 
 ## Stack
 
