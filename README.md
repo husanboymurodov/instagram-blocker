@@ -37,12 +37,12 @@ Calls Instagram's internal GraphQL mutation (`usePolarisBlockManyMutation`) — 
 ## Install
 
 ### Chrome
-1. Clone this repo
+1. Clone [this repo](https://github.com/husanboymurodov/instagram-viewer-blocker)
 2. Go to `chrome://extensions` → enable **Developer Mode**
 3. Click **Load unpacked** → select the repo folder
 
 ### Firefox (109+)
-1. Clone this repo
+1. Clone [this repo](https://github.com/husanboymurodov/instagram-viewer-blocker)
 2. Go to `about:debugging` → **This Firefox** → **Load Temporary Add-on**
 3. Navigate into the repo folder and select **`manifest.json`**
 
