@@ -6,6 +6,7 @@ const blockBtn   = document.getElementById('blockBtn');
 const infoBtn    = document.getElementById('infoBtn');
 const infoBox    = document.getElementById('infoBox');
 const avatar     = document.getElementById('avatar');
+const noPhoto    = document.getElementById('noPhoto');
 const iUsername  = document.getElementById('iUsername');
 const iId        = document.getElementById('iId');
 const iFollowers = document.getElementById('iFollowers');
@@ -70,8 +71,14 @@ infoBtn.addEventListener('click', async () => {
   if (p.profilePic) {
     avatar.src = p.profilePic;
     avatar.style.display = 'block';
+    noPhoto.style.display = 'none';
+    avatar.onerror = () => {
+      avatar.style.display = 'none';
+      noPhoto.style.display = 'block';
+    };
   } else {
     avatar.style.display = 'none';
+    noPhoto.style.display = 'block';
   }
 
   iUsername.textContent  = '@' + p.username + (priv ? ' 🔒' : '');

@@ -248,9 +248,13 @@ function parseProfileFromHtml(html, usernameLower) {
   if (userId || fromMeta) {
     const parse = (m) => m ? parseInt(m[1].replace(/,/g, ''), 10) : null;
     const isPrivate  = /is_private["'\s]*:["'\s]*true/i.test(html);
-    const picMatch   = html.match(/"profile_pic_url_hd"\s*:\s*"([^"]+)"/);
-    const picMatch2  = picMatch ?? html.match(/"profile_pic_url"\s*:\s*"([^"]+)"/);
-    const profilePic = picMatch2 ? picMatch2[1].replace(/\\u0026/g, '&').replace(/\\\//g, '/') : null;
+    const picMatch   = html.match(/"profile_pic_url_hd"\s*:\s*"((?:[^"\\]|\\.)*)"/);
+    const picMatch2  = picMatch ?? html.match(/"profile_pic_url"\s*:\s*"((?:[^"\\]|\\.)*)"/);
+    let profilePic   = null;
+    if (picMatch2) {
+      try { profilePic = JSON.parse('"' + picMatch2[1] + '"'); }
+      catch { profilePic = picMatch2[1].replace(/\\u0026/g, '&').replace(/\\\//g, '/'); }
+    }
     return {
       userId:    userId ?? null,
       username:  usernameLower,
