@@ -5,14 +5,13 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      width: 260px;
+      width: 240px;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: #0f0f0f;
       color: #fff;
       padding: 16px;
     }
-    h2 { font-size: 15px; margin-bottom: 12px; color: #ed4956; }
-    p  { font-size: 12px; color: #aaa; margin-bottom: 12px; line-height: 1.5; }
+    h2  { font-size: 15px; margin-bottom: 10px; color: #ed4956; }
     input {
       width: 100%;
       padding: 8px 10px;
@@ -44,20 +43,9 @@
 </head>
 <body>
   <h2>IG Blocker</h2>
-  <p>Block by username — tries search API as fallback if they blocked you.</p>
   <input id="username" type="text" placeholder="@username" autocomplete="off" spellcheck="false" />
-  <button id="blockBtn">Block by Username</button>
+  <button id="blockBtn">Block</button>
   <div id="status"></div>
-
-  <hr style="border-color:#222; margin:14px 0;" />
-
-  <p style="color:#777;">If username fails, paste their numeric User ID:<br>
-    <a href="https://commentpicker.com/instagram-user-id.php" target="_blank"
-       style="color:#ed4956; font-size:11px;">Get ID → commentpicker.com</a>
-  </p>
-  <input id="userid" type="text" placeholder="User ID (e.g. 77539356504)" autocomplete="off" spellcheck="false" />
-  <button id="blockByIdBtn">Block by User ID</button>
-  <div id="statusId"></div>
   <script src="popup.js"></script>
 </body>
 </html>
