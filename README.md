@@ -7,6 +7,8 @@ Chrome and Firefox extension to block any Instagram account by username — incl
 - **One-click block** — open popup on any profile, username auto-fills, click Block
 - **Works when blocked** — if they blocked you first, Instagram hides their profile; this extension bypasses that
 - **Profile Info** — reveals user ID, follower count, following count, and post count for any account, even blocked ones
+- **Private account detection** — shows 🔒 and "Private" instead of blank dashes for private accounts
+- **Graceful error messages** — expired DOC_ID, connection issues, and private accounts all surface clear messages
 - **Fully automatic** — user only ever types a username; ID resolution and blocking happen in the background
 
 ## How it works
@@ -59,8 +61,13 @@ Calls Instagram's internal GraphQL mutation (`usePolarisBlockManyMutation`) — 
 ## Notes
 
 - Must be logged into Instagram in the same browser
-- `DOC_ID` in `content.js` is tied to Instagram's current deploy — if blocking stops working, capture a fresh `usePolarisBlockManyMutation` request from the Network tab and update the value
-- Icons not included for redistribution — current icons are for personal use
+- `DOC_ID` in `content.js` is tied to Instagram's current deploy — if blocking stops working, the extension will display a clear error message; capture a fresh `usePolarisBlockManyMutation` request from the Network tab and update the value
+- If you see "Refresh the Instagram tab", do so once — happens when the tab was open before the extension loaded
+- Private accounts show 🔒 in Profile Info; follower/following/post counts display as "Private"
+
+## Privacy
+
+This extension collects no data. See [privacy-policy.html](privacy-policy.html) — host it on GitHub Pages to use as the store listing URL.
 
 ## Stack
 

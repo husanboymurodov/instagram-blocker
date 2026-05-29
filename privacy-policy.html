@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — IG Blocker</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      max-width: 640px;
+      margin: 60px auto;
+      padding: 0 24px;
+      color: #1a1a1a;
+      line-height: 1.7;
+    }
+    h1 { font-size: 24px; margin-bottom: 4px; }
+    h2 { font-size: 16px; margin-top: 32px; }
+    p, li { font-size: 15px; color: #333; }
+    .date { color: #888; font-size: 13px; margin-bottom: 40px; }
+  </style>
+</head>
+<body>
+  <h1>Privacy Policy</h1>
+  <p class="date">Last updated: May 2026</p>
+
+  <h2>Overview</h2>
+  <p>IG Blocker is a browser extension that allows users to block Instagram accounts. This privacy policy explains what data the extension accesses and how it is used.</p>
+
+  <h2>Data collection</h2>
+  <p>IG Blocker does <strong>not</strong> collect, store, transmit, or share any personal data. Specifically:</p>
+  <ul>
+    <li>No data is sent to any external server operated by the extension developer.</li>
+    <li>No analytics, tracking, or telemetry of any kind is performed.</li>
+    <li>No user account information is stored outside the user's own browser.</li>
+  </ul>
+
+  <h2>How it works</h2>
+  <p>The extension operates entirely within the user's browser. When a user requests to block an account or look up profile information, the extension makes requests directly to Instagram's own servers using the user's existing logged-in session — the same requests Instagram's website makes itself. No third party is involved.</p>
+
+  <h2>Permissions</h2>
+  <ul>
+    <li><strong>instagram.com host access</strong> — required to interact with Instagram's internal API from within the user's browser session.</li>
+    <li><strong>tabs</strong> — required to read the current tab's URL so the username field can be auto-filled when visiting a profile page.</li>
+    <li><strong>cookies / activeTab / scripting</strong> — required to inject the content script that performs block operations within the Instagram session context.</li>
+  </ul>
+
+  <h2>Contact</h2>
+  <p>Questions? Open an issue on <a href="https://github.com/husanboymurodov/instagram-blocker">GitHub</a>.</p>
+</body>
+</html>

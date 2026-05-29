@@ -1,23 +1,24 @@
 /* global browser */
 const _chrome = typeof browser !== 'undefined' ? browser : chrome; // Firefox / Chrome compat
 
-const input    = document.getElementById('username');
-const blockBtn = document.getElementById('blockBtn');
-const infoBtn  = document.getElementById('infoBtn');
-const infoBox  = document.getElementById('infoBox');
+const input      = document.getElementById('username');
+const blockBtn   = document.getElementById('blockBtn');
+const infoBtn    = document.getElementById('infoBtn');
+const infoBox    = document.getElementById('infoBox');
 const iUsername  = document.getElementById('iUsername');
 const iId        = document.getElementById('iId');
 const iFollowers = document.getElementById('iFollowers');
 const iFollowing = document.getElementById('iFollowing');
 const iPosts     = document.getElementById('iPosts');
-const status   = document.getElementById('status');
+const status     = document.getElementById('status');
 
 function setStatus(msg, cls) {
   status.textContent = msg;
   status.className = cls ?? '';
 }
 
-function fmt(n) {
+function fmt(n, isPrivate) {
+  if (isPrivate && n == null) return 'Private';
   if (n == null) return '—';
   return n >= 1_000_000 ? (n / 1_000_000).toFixed(1) + 'M'
        : n >= 1_000     ? (n / 1_000).toFixed(1) + 'K'
@@ -30,6 +31,12 @@ function sendMsg(type, payload) {
       resolve(_chrome.runtime.lastError ? null : resp)
     )
   );
+}
+
+// Show "Opening Instagram tab…" if response takes > 900ms (new tab being created)
+function withTabFeedback(promise, label) {
+  const timer = setTimeout(() => setStatus(`Opening Instagram tab for ${label}…`), 900);
+  return promise.finally(() => clearTimeout(timer));
 }
 
 // Auto-fill username from active tab URL
@@ -48,7 +55,7 @@ infoBtn.addEventListener('click', async () => {
   setStatus('Fetching…');
   infoBox.classList.remove('visible');
 
-  const resp = await sendMsg('POPUP_FETCH_PROFILE', { username });
+  const resp = await withTabFeedback(sendMsg('POPUP_FETCH_PROFILE', { username }), 'profile lookup');
   infoBtn.disabled = false;
 
   if (!resp || !resp.ok) {
@@ -57,11 +64,12 @@ infoBtn.addEventListener('click', async () => {
   }
 
   const p = resp.profile;
-  iUsername.textContent  = '@' + p.username;
-  iId.textContent        = p.userId;
-  iFollowers.textContent = fmt(p.followers);
-  iFollowing.textContent = fmt(p.following);
-  iPosts.textContent     = fmt(p.posts);
+  const priv = p.isPrivate;
+  iUsername.textContent  = '@' + p.username + (priv ? ' 🔒' : '');
+  iId.textContent        = p.userId ?? '—';
+  iFollowers.textContent = fmt(p.followers, priv);
+  iFollowing.textContent = fmt(p.following, priv);
+  iPosts.textContent     = fmt(p.posts,     priv);
   infoBox.classList.add('visible');
   setStatus('');
 });
@@ -73,7 +81,7 @@ blockBtn.addEventListener('click', async () => {
   blockBtn.disabled = true;
   setStatus('Blocking…');
 
-  const resp = await sendMsg('POPUP_BLOCK_USERNAME', { username });
+  const resp = await withTabFeedback(sendMsg('POPUP_BLOCK_USERNAME', { username }), 'blocking');
   blockBtn.disabled = false;
 
   if (!resp) { setStatus('Error: no Instagram tab found', 'err'); return; }

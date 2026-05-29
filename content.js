@@ -140,8 +140,16 @@ async function blockById(targetUserId) {
     body: body.toString(),
   });
 
+  if (resp.status === 400 || resp.status === 404) {
+    throw new Error('Block request rejected — DOC_ID likely expired. Capture a fresh request from Network tab and update DOC_ID in content.js.');
+  }
   const json = await resp.json();
-  if (json.status !== 'ok') throw new Error(JSON.stringify(json));
+  if (json.status !== 'ok') {
+    const hint = (json.message || '').toLowerCase().includes('doc')
+      ? ' (DOC_ID may be expired)'
+      : '';
+    throw new Error(`Block failed${hint}: ${json.message ?? JSON.stringify(json)}`);
+  }
   return json;
 }
 
@@ -184,9 +192,10 @@ function profileFromApiUser(d) {
   return {
     userId:    d.id,
     username:  d.username,
-    followers: d.edge_followed_by?.count            ?? d.follower_count  ?? null,
-    following: d.edge_follow?.count                 ?? d.following_count ?? null,
-    posts:     d.edge_owner_to_timeline_media?.count ?? d.media_count    ?? null,
+    isPrivate: d.is_private ?? false,
+    followers: d.edge_followed_by?.count             ?? d.follower_count  ?? null,
+    following: d.edge_follow?.count                  ?? d.following_count ?? null,
+    posts:     d.edge_owner_to_timeline_media?.count ?? d.media_count     ?? null,
   };
 }
 
@@ -215,6 +224,7 @@ function parseProfileFromHtml(html, usernameLower) {
         return {
           userId:    user.id    ?? user.pk,
           username:  user.username,
+          isPrivate: user.is_private ?? false,
           followers: user.edge_followed_by?.count             ?? user.follower_count  ?? null,
           following: user.edge_follow?.count                  ?? user.following_count ?? null,
           posts:     user.edge_owner_to_timeline_media?.count ?? user.media_count     ?? null,
@@ -235,12 +245,14 @@ function parseProfileFromHtml(html, usernameLower) {
 
   if (userId || fromMeta) {
     const parse = (m) => m ? parseInt(m[1].replace(/,/g, ''), 10) : null;
+    const isPrivate = /is_private["'\s]*:["'\s]*true/i.test(html);
     return {
       userId:    userId ?? null,
       username:  usernameLower,
-      followers: parse(fwrMatch)  ?? extractCount(html, 'edge_followed_by')            ?? extractCount(html, 'follower_count'),
-      following: parse(fwgMatch)  ?? extractCount(html, 'edge_follow')                 ?? extractCount(html, 'following_count'),
-      posts:     parse(postMatch) ?? extractCount(html, 'edge_owner_to_timeline_media') ?? extractCount(html, 'media_count'),
+      isPrivate,
+      followers: parse(fwrMatch)  ?? extractCount(html, 'edge_followed_by')             ?? extractCount(html, 'follower_count'),
+      following: parse(fwgMatch)  ?? extractCount(html, 'edge_follow')                  ?? extractCount(html, 'following_count'),
+      posts:     parse(postMatch) ?? extractCount(html, 'edge_owner_to_timeline_media')  ?? extractCount(html, 'media_count'),
     };
   }
 
