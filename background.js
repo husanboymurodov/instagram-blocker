@@ -21,6 +21,10 @@ function forwardToInstagramTab(msg, sendResponse) {
 }
 
 chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
+  if (msg.type === 'POPUP_RESOLVE_USERNAME') {
+    forwardToInstagramTab({ type: 'RESOLVE_USERNAME', username: msg.username }, sendResponse);
+    return true;
+  }
   if (msg.type === 'POPUP_BLOCK_USERNAME') {
     forwardToInstagramTab({ type: 'BLOCK_USERNAME', username: msg.username }, sendResponse);
     return true;

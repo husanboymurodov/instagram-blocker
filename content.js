@@ -102,6 +102,12 @@ async function blockById(targetUserId) {
 }
 
 chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
+  if (msg.type === 'RESOLVE_USERNAME') {
+    resolveUserId(msg.username)
+      .then(id => sendResponse({ ok: !!id, userId: id }))
+      .catch(() => sendResponse({ ok: false, userId: null }));
+    return true;
+  }
   if (msg.type === 'BLOCK_USERNAME') {
     resolveUserId(msg.username)
       .then(id => {
