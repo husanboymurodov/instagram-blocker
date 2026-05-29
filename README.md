@@ -72,7 +72,7 @@ Calls Instagram's internal GraphQL mutation (`usePolarisBlockManyMutation`) — 
 
 ## Privacy
 
-No data collected. [Privacy Policy](https://husanboymurodov.github.io/instagram-blocker/privacy-policy.html)
+No data collected. [Privacy Policy](https://husanboymurodov.github.io/instagram-viewer-blocker/privacy-policy.html)
 
 ## Stack
 
