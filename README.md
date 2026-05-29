@@ -1,4 +1,4 @@
-# Instagram Blocker
+# Instagram Blocker — Block Any Instagram Account
 
 Chrome and Firefox extension to block any Instagram account by username — including accounts that have already blocked you.
 

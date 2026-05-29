@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "IG Blocker",
+  "name": "Instagram Blocker",
   "version": "1.0.0",
   "description": "Block Instagram accounts — even ones that blocked you first.",
   "permissions": ["cookies", "activeTab", "scripting", "tabs"],
@@ -28,7 +28,7 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "IG Blocker",
+    "default_title": "Instagram Blocker",
     "default_icon": {
       "16":  "icons/icon16.png",
       "48":  "icons/icon48.png",
