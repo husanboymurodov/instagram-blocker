@@ -36,7 +36,10 @@ Calls Instagram's internal GraphQL mutation (`usePolarisBlockManyMutation`) — 
 
 ## Install
 
-### Chrome
+### Chrome (recommended)
+Install from the [Chrome Web Store](https://chromewebstore.google.com/detail/instagram-viewer-blocker/mhhokaaoppcilkeekdfokjdpfhfinmpn).
+
+Or manually:
 1. Clone [this repo](https://github.com/husanboymurodov/instagram-viewer-blocker)
 2. Go to `chrome://extensions` → enable **Developer Mode**
 3. Click **Load unpacked** → select the repo folder
